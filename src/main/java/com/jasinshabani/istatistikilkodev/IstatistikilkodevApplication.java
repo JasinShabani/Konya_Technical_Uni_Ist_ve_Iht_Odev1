@@ -20,14 +20,18 @@ public class IstatistikilkodevApplication {
         int secim;
         Scanner scanner=new Scanner(System.in);
 
-
+        //ilk basta secim yapilmasi icin 1-2 girene kadar dongu icinde calistirdim
         while(true) {
             System.out.println("Hangi Tablonun Verilerini Bastirmak istiyorsunuz?");
             System.out.println("1) Trafik Yogunlugu");
             System.out.println("2) Yagis Miktarlari");
+            //secim yaptirdim
             secim=scanner.nextInt();
             if (secim == 1) {
-                File file = new File("C:\\Users\\Yasin\\Documents\\Technoperia\\istatistikilkodev\\Trafik.xlsx");
+
+                //dosyayi ayni package altinda koydum karismasin diye
+                File file = new File("./src/main/java/com/jasinshabani/istatistikilkodev/Trafik.xlsx");
+                //Open Source Poiji kutuphanesini kullandim, excelldeki rowlari javadaki objelere donusturmek icin
                 List<Trafik> trafikList = Poiji.fromExcel(file, Trafik.class);
 
                 System.out.println("Aritmetik Ortalama:");
@@ -50,7 +54,8 @@ public class IstatistikilkodevApplication {
                 trafikDegisimAraligi(trafikList);
                 return;
             } else if (secim == 2) {
-                File file = new File("C:\\Users\\Yasin\\Documents\\Technoperia\\istatistikilkodev\\Yagis.xlsx");
+                //ayni sekilde dosyayi ayni package altinda koydum karismasin diye
+                File file = new File("./src/main/java/com/jasinshabani/istatistikilkodev/Yagis.xlsx");
                 List<Yagis> yagisList = Poiji.fromExcel(file, Yagis.class);
 
                 System.out.println("Yagis Aritmetik Ortalama:");
@@ -77,12 +82,20 @@ public class IstatistikilkodevApplication {
             }
         }
     }
+
+
+    //---------------------------------------------------------------------------------------------------
     // Trafik icin Fonksiyonlar
+    //---------------------------------------------------------------------------------------------------
+
+    //Isimi kolaylastirmasi icin Liste<Trafik> seklinde olusturdugum objeleri parametre olarak gonderdim
     static void trafikAritmetik_Ort(List<Trafik> trafikList){
+        // 3 column oldugu icin hepsi icin ayri ayri ArrayList olusturdum
         List<Integer> kavsak1dizi = new ArrayList<Integer>();
         List<Integer> kavsak2dizi = new ArrayList<Integer>();
         List<Integer> kavsak3dizi = new ArrayList<Integer>();
 
+        //for each yardimiyla butun listelerime Poiji ile aldigim degerleri basitlestirip isimi daha kolay yapmak icin olusturdugum yeni dizilere attim
         for (Trafik trafik: trafikList) {
             kavsak1dizi.add(trafik.getKavsak1());
             kavsak2dizi.add(trafik.getKavsak2());
@@ -92,6 +105,7 @@ public class IstatistikilkodevApplication {
         double toplamKavsak2dizi = 0.0;
         double toplamKavsak3dizi = 0.0;
 
+        // Gordugunuz gibi yine for each ve bu defa isimiz cok basit degiskenimize icerideki sayilari atiyorum, topluyorum yani
         for (Integer sayi: kavsak1dizi) {
             toplamKavsak1dizi += sayi;
         }
@@ -101,6 +115,8 @@ public class IstatistikilkodevApplication {
         for (Integer sayi: kavsak3dizi) {
             toplamKavsak3dizi += sayi;
         }
+
+        // burada da topladigim sayilari dizi boyutu ile boldugumuzde bize ortalamasini veriyor
         double ortalamaKavsak1dizi = toplamKavsak1dizi / kavsak1dizi.size();
         double ortalamaKavsak2dizi = toplamKavsak2dizi / kavsak2dizi.size();
         double ortalamaKavsak3dizi = toplamKavsak3dizi / kavsak3dizi.size();
@@ -113,6 +129,7 @@ public class IstatistikilkodevApplication {
     }
 
     static void trafikMedyan(List<Trafik> trafikList){
+        //Ayni sekilde dizileri olusturdum bunlari basta genel olarak da tanimlayabilirdim fakat boyle tercih ettim
         List<Integer> kavsak1dizi = new ArrayList<Integer>();
         List<Integer> kavsak2dizi = new ArrayList<Integer>();
         List<Integer> kavsak3dizi = new ArrayList<Integer>();
@@ -121,6 +138,8 @@ public class IstatistikilkodevApplication {
             kavsak2dizi.add(trafik.getKavsak2());
             kavsak3dizi.add(trafik.getKavsak3());
         }
+
+        //Medyanini bulmak icin dizimi kucukten buyuge dogru siralamamiz gerekiyordu
         Collections.sort(kavsak1dizi);
         Collections.sort(kavsak2dizi);
         Collections.sort(kavsak3dizi);
@@ -129,6 +148,9 @@ public class IstatistikilkodevApplication {
         double medyankavsak2;
         double medyankavsak3;
 
+        //burada kontrol ettigim sey ise, dizinin boyutunun cift mi tek mi oldugunu kontrol etmek
+        //cift ise 2 tane medyan oldugu icin ikisinide toplayip 2 ye boldugumuzde sonucumuza ulasiyoruz
+        //tek ise zaten dizi boyutunu 2 ye boldugumuzde direk olarak degeri verir
         if (kavsak1dizi.size()%2==0) {
             medyankavsak1 = ((double) kavsak1dizi.get(kavsak1dizi.size() / 2) + (double) kavsak1dizi.get(kavsak1dizi.size() / 2 - 1)) / 2; //ortancaların ortalaması
         }else {
@@ -158,52 +180,59 @@ public class IstatistikilkodevApplication {
             kavsak2dizi.add(trafik.getKavsak2());
             kavsak3dizi.add(trafik.getKavsak3());
         }
+        //Tekrardan Modunu almak icin Dizimizi siraladik
         Collections.sort(kavsak1dizi);
         Collections.sort(kavsak2dizi);
         Collections.sort(kavsak3dizi);
 
         int mod = 0;
         int modDeger;
-        int k, i, counter;
+        int k, i, sayac;
 
+        //Bu metodlari aslinda biraz ilkel yapida olusturdum fakat isimi gordugu icin fazla dokunmak istemedim
+        //ilk once mod olarak dizinin ilk elemanini aldim
         modDeger = kavsak1dizi.get(0);
         for (i = 0; i < kavsak1dizi.size(); ++i) {
-            counter = 0;
+            sayac = 0;
+            //2 ic ice for girmemin sebebi her sayidan nekadar var onu bulmamiz icin teker teker kontrol ediyoruz
             for (k = 0; k < kavsak1dizi.size(); ++k)
                 if (kavsak1dizi.get(k) == kavsak1dizi.get(i))
-                    counter++;
-            if (counter > mod) {
-                mod = counter;
+                    sayac++;
+                //eger simdi kontrol ettigimiz sayi daha once kontrol ettigimiz sayilardan fazla varsa modDeger olarak bunu atiyoruz
+            if (sayac > mod) {
+                mod = sayac;
                 modDeger = kavsak1dizi.get(i);
             }
         }
         System.out.println("Kavsak1 - Mod : "+modDeger + " Frekans :"+mod);
 
         // Kavsak2
+        //Buralarda da ayni kodu diger diziler icin tekrarladim, kodumda kod tekrari cok fazla var ama if it works dont touch it mantigiyla ilerliyorum
         mod = 0;
         modDeger = kavsak2dizi.get(0);
         for (i = 0; i < kavsak2dizi.size(); ++i) {
-            counter = 0;
+            sayac = 0;
             for (k = 0; k < kavsak2dizi.size(); ++k)
                 if (kavsak2dizi.get(k) == kavsak2dizi.get(i))
-                    counter++;
-            if (counter > mod) {
-                mod = counter;
+                    sayac++;
+            if (sayac > mod) {
+                mod = sayac;
                 modDeger = kavsak2dizi.get(i);
             }
         }
         System.out.println("Kavsak2 - Mod : "+modDeger + " Frekans :"+mod);
 
         // Kavsak3
+        //Buralar da ayni sekilde ayni islemler sadece farkli diziler icin
         mod = 0;
         modDeger = kavsak3dizi.get(0);
         for (i = 0; i < kavsak3dizi.size(); ++i) {
-            counter = 0;
+            sayac = 0;
             for (k = 0; k < kavsak3dizi.size(); ++k)
                 if (kavsak3dizi.get(k) == kavsak3dizi.get(i))
-                    counter++;
-            if (counter > mod) {
-                mod = counter;
+                    sayac++;
+            if (sayac > mod) {
+                mod = sayac;
                 modDeger = kavsak3dizi.get(i);
             }
         }
@@ -223,15 +252,18 @@ public class IstatistikilkodevApplication {
         int toplam = 0;
         double ortMutlakSapma,ortalama,uzaklik=0.0;
         int i;
-
+//dizideki elemanlarin toplamini aldim
         for (i = 0; i < kavsak1dizi.size(); i++) {
            toplam+=kavsak1dizi.get(i);
         }
+        //ortalamasini hesapladim
         ortalama = (double)toplam/kavsak1dizi.size();
 
 //        System.out.println(" ORtalama "+ortalama);
-
+        //dizinin boyutu kadar for la dondum
         for (i = 0; i < kavsak1dizi.size(); i++) {
+            //uzakligi bulmak icin mod (%) kullanamadim, kullanim sekli dogru olmadigi icin bu turlu bende ortlamadan buyuk mu kucuk mu kontrol edip
+            //ya ortalamayi sayidan cikardim uzakligi bulmak icin
             if(ortalama>kavsak1dizi.get(i)){
                 uzaklik += (ortalama-kavsak1dizi.get(i));
 
@@ -240,6 +272,7 @@ public class IstatistikilkodevApplication {
                 System.out.println(" ortalama%kavsak1dizi.get(i)  "+ortalama%kavsak1dizi.get(i));
                 System.out.println(" Uzaklik "+uzaklik);*/
             }
+            //veya sayidan ortalamayi cikardim ve uzakliga ekledim cunku uzakligi daha asagida dizi boyutuna bolucem
             else{
                 uzaklik += (kavsak1dizi.get(i)-ortalama);
 
@@ -251,10 +284,12 @@ public class IstatistikilkodevApplication {
         }
 
 //      System.out.println(" Uzaklik "+uzaklik);
+        //dizi boyutuna boldugumuzde zaten Ort Mutlak sapmayi buluyoruz
         ortMutlakSapma = (double) uzaklik/kavsak1dizi.size();
         System.out.format("Kavsak1 - Ortalama Mutlak Sapma = %.2f\n",ortMutlakSapma);
 
         //KAvsak 2
+        //Burada da kodlari tekrarlayip ayni sekilde diger dizilerin de hesapladim
         toplam = 0;
         uzaklik=0.0;
 
@@ -317,15 +352,19 @@ public class IstatistikilkodevApplication {
         int toplam = 0;
         double ortMutlakSapma,ortalama,uzaklik=0.0,karelerininToplami=0.0,varyans=0.0;
         int i;
-
+        //tekrardan toplamini aldim dizinin
         for (i = 0; i < kavsak1dizi.size(); i++) {
             toplam+=kavsak1dizi.get(i);
         }
+        //dizi boyutuna bolup ort buldum
         ortalama = (double)toplam/kavsak1dizi.size();
 
 //        System.out.println(" ORtalama "+ortalama);
 
+        //dizi boyutu kadar dondum for icinde
         for (i = 0; i < kavsak1dizi.size(); i++) {
+            //buldugum ortalama sayidan buyuk ise yukarida yaptigim ayni mantigi burada da kullandim
+            // Mod(%) dogru sekilde calismadigi icin bu konu uzerinde bende uzakligi boyle buldum
             if(ortalama>kavsak1dizi.get(i)){
                 uzaklik = ortalama - kavsak1dizi.get(i);
                 karelerininToplami += Math.pow(uzaklik,2);
@@ -336,10 +375,13 @@ public class IstatistikilkodevApplication {
             }
         }
 //        System.out.println("karelerininToplami "+karelerininToplami);
+        //dizinin boyutunun 1 eksigiyle boldum ve varyansi elde ettim
+        //karelerinin toplamini da uzakligi kontrol ettigim de yukarida for icinde hesapladim
         varyans = (double) karelerininToplami/(kavsak1dizi.size()-1);
         System.out.format("Kavsak1 - Varyans = %.2f\n",varyans);
 
         //Kavsak2
+        //Burada da yine ayni kodu devam ettirdim
         toplam = 0;
         uzaklik=0.0;
         karelerininToplami=0.0;
@@ -398,6 +440,7 @@ public class IstatistikilkodevApplication {
             kavsak2dizi.add(trafik.getKavsak2());
             kavsak3dizi.add(trafik.getKavsak3());
         }
+        //Standart SApmayi bulmak icin diziyi siraladik
         Collections.sort(kavsak1dizi);
         Collections.sort(kavsak2dizi);
         Collections.sort(kavsak3dizi);
@@ -407,9 +450,10 @@ public class IstatistikilkodevApplication {
         for(double sayi : kavsak1dizi) {
             toplam += sayi;
         }
-
+        //ortalamasini buldum
         ortalama= toplam/kavsak1dizi.size();
 
+        //sayi-ortalama nin karesi formuluyle ilerledim ve standart sapmayi buldm
         for(double sayi: kavsak1dizi) {
             standartSapma += Math.pow(sayi - ortalama, 2);
         }
@@ -463,6 +507,7 @@ public class IstatistikilkodevApplication {
         //Kavsak 1
         double toplam = 0;
         double degisimKatsayisi;
+        //degisim katsayisi mevcut sayilarin o sayilarin ortalamasi ile farkinin karesi oldugu icin, o formul uzerinden devam ettim ve bu sonucu elde ettim.
         for (int i = 0; i < kavsak1dizi.size(); i++) {
             toplam = toplam + (kavsak1dizi.get(i) - ortalamakavsak(kavsak1dizi)) * (kavsak1dizi.get(i) - ortalamakavsak(kavsak1dizi));
         }
@@ -489,6 +534,8 @@ public class IstatistikilkodevApplication {
 
         System.out.format("Kavsak3  Degisim Katsayisi = %.3f\n",degisimKatsayisi);
     }
+
+    //bu fonksiyonu bir onceki fonksiyonda listenin ortalamsini bulurken kodlari tekrar yazmamak icin fonksiyon seklinde olusturdum.
     static double ortalamakavsak(List<Integer> kavsak1dizi) {
         double toplam = 0;
 
@@ -497,7 +544,7 @@ public class IstatistikilkodevApplication {
         return toplam / kavsak1dizi.size();
     }
 
-
+    //Ceyrekler acikligi en complex olan fonk oldu belkide benim icin
     static void trafikCeyreklerAcikligi(List<Trafik> trafikList){
         List<Integer> kavsak1dizi = new ArrayList<Integer>();
         List<Integer> kavsak2dizi = new ArrayList<Integer>();
@@ -514,12 +561,18 @@ public class IstatistikilkodevApplication {
         //Kavsak 1
         double altgrup,ustgrup;
         double ceyrekacikligi;
+        //2 dizi daha olustudum extradan
+        //sol ve sag veya (alt ve ust) olarak ayirabilirz bunlari
         List<Integer> kavsak1diziAltceyrek = new ArrayList<Integer>();
         List<Integer> kavsak1diziUstceyrek = new ArrayList<Integer>();
+        //dizi uzunlugunun cift mi tek mi oldugunu kontrol ettim
         if(kavsak1dizi.size()%2==1){
+            //dizinin sol kismin da kalan ama dizi sirali suanda
+            //sol kisminda kaldigini anlamamiz icin sadece 2 ye boldum cunku dizinin uzunlugu tek
             for (int i = 0; i < kavsak1dizi.size()/2; i++) {
                 kavsak1diziAltceyrek.add(kavsak1dizi.get(i));
             }
+            //buldugum yeni listeyi de (uzunluk/2)/2 olarak o dizinin orta elemanini buldum
             altgrup=kavsak1diziAltceyrek.get((kavsak1dizi.size()/2)/2);
             for (int i = (kavsak1dizi.size()/2)+1; i < kavsak1dizi.size(); i++) {
                 kavsak1diziUstceyrek.add(kavsak1dizi.get(i));
@@ -527,7 +580,9 @@ public class IstatistikilkodevApplication {
             ustgrup=kavsak1diziUstceyrek.get((kavsak1dizi.size()/2)/2);
 
             ceyrekacikligi = ustgrup - altgrup;
-        }else{
+        }
+        //eger dizi boyutu cift ise buraya girecek ve 2 ci forda kavsak1dizi.size()/2)+1 yapmadan direk olarak ortasini bulabilecegiz
+        else{
             for (int i = 0; i < kavsak1dizi.size()/2; i++) {
                 kavsak1diziAltceyrek.add(kavsak1dizi.get(i));
             }
@@ -544,6 +599,7 @@ public class IstatistikilkodevApplication {
 
 
         //Kavsak 2
+        //Kodun  tekrarini yazdim
         List<Integer> kavsak2diziAltceyrek = new ArrayList<Integer>();
         List<Integer> kavsak2diziUstceyrek = new ArrayList<Integer>();
         if(kavsak1dizi.size()%2==1){
@@ -609,6 +665,7 @@ public class IstatistikilkodevApplication {
             kavsak2dizi.add(trafik.getKavsak2());
             kavsak3dizi.add(trafik.getKavsak3());
         }
+        //Bu fonksiyonda da Max-Min + 1 formulunden degisim araligini buldum.
         System.out.println("Kavsak1 Degisim Araligi = " + (Collections.max(kavsak1dizi) - Collections.min(kavsak1dizi) + 1));
         System.out.println("Kavsak2 Degisim Araligi = " + (Collections.max(kavsak2dizi) - Collections.min(kavsak2dizi) + 1));
         System.out.println("Kavsak3 Degisim Araligi = " + (Collections.max(kavsak3dizi) - Collections.min(kavsak3dizi) + 1));
@@ -620,14 +677,16 @@ public class IstatistikilkodevApplication {
 
 
 
-
+    //Buradan sonraki kodlari yagis dosyasinda var olan bilgiler icin yazdim
     // Yagis icin Fonksiyonlar
     static void yagisAritmetik_Ort(List<Yagis> yagisList){
+        // 4 column oldugu icin hepsi icin ayri ayri ArrayList olusturdum
         List<Double> konyadizi = new ArrayList<Double>();
         List<Double> istanbuldizi = new ArrayList<Double>();
         List<Double> ankaradizi = new ArrayList<Double>();
         List<Double> antalyadizi = new ArrayList<Double>();
 
+        //Bunda da for each yardimiyla butun listelerime Poiji ile aldigim degerleri basitlestirip isimi daha kolay yapmak icin olusturdugum yeni dizilere attim
         for (Yagis yagis: yagisList) {
             konyadizi.add(yagis.getKonya());
             istanbuldizi.add(yagis.getIstanbul());
@@ -639,6 +698,7 @@ public class IstatistikilkodevApplication {
         double toplamankaradizi = 0.0;
         double toplamantalyadizi = 0.0;
 
+        // Gordugunuz gibi yine for each ve bu defa isimiz cok basit degiskenimize icerideki sayilari atiyorum, topluyorum yani
         for (Double sayi: konyadizi) {
             toplamkonyadizi += sayi;
         }
@@ -651,6 +711,8 @@ public class IstatistikilkodevApplication {
         for (Double sayi: antalyadizi) {
             toplamantalyadizi += sayi;
         }
+
+        // burada da topladigim sayilari dizi boyutu ile boldugumuzde bize ortalamasini veriyor
         double ortalamakonyadizi = toplamkonyadizi / konyadizi.size();
         double ortalamaistanbuldizi = toplamistanbuldizi / istanbuldizi.size();
         double ortalamaAnkaradizi = toplamankaradizi / ankaradizi.size();
@@ -665,6 +727,7 @@ public class IstatistikilkodevApplication {
     }
 
     static void yagisMedyan(List<Yagis> yagisList){
+        //Ayni sekilde dizileri olusturdum bunlari basta bunda da genel olarak da tanimlayabilirdim fakat boyle tercih ettim
         List<Double> konyadizi = new ArrayList<Double>();
         List<Double> istanbuldizi = new ArrayList<Double>();
         List<Double> ankaradizi = new ArrayList<Double>();
@@ -676,6 +739,8 @@ public class IstatistikilkodevApplication {
             ankaradizi.add(yagis.getAnkara());
             antalyadizi.add(yagis.getAntalya());
         }
+
+        //Medyanini bulmak icin dizimi kucukten buyuge dogru siralamamiz gerekiyordu
         Collections.sort(konyadizi);
         Collections.sort(istanbuldizi);
         Collections.sort(ankaradizi);
@@ -686,6 +751,9 @@ public class IstatistikilkodevApplication {
         double medyanankara;
         double medyanantalya;
 
+        //burada kontrol ettigim sey ise, dizinin boyutunun cift mi tek mi oldugunu kontrol etmek
+        //cift ise 2 tane medyan oldugu icin ikisinide toplayip 2 ye boldugumuzde sonucumuza ulasiyoruz
+        //tek ise zaten dizi boyutunu 2 ye boldugumuzde direk olarak degeri verir
         if (konyadizi.size()%2==0) {
             medyankonya = ((double) konyadizi.get(konyadizi.size() / 2) + (double) konyadizi.get(konyadizi.size() / 2 - 1)) / 2; //ortancaların ortalaması
         }else {
@@ -733,12 +801,15 @@ public class IstatistikilkodevApplication {
         double modDeger;
         int k, i, sayac;
 
+        //ilk once mod olarak dizinin ilk elemanini aldim
         modDeger = konyadizi.get(0);
         for (i = 0; i < konyadizi.size(); ++i) {
             sayac = 0;
+            //2 ic ice for girmemin sebebi her sayidan nekadar var onu bulmamiz icin teker teker kontrol ediyoruz
             for (k = 0; k < konyadizi.size(); ++k)
                 if (konyadizi.get(k) == konyadizi.get(i))
                     sayac++;
+            //eger simdi kontrol ettigimiz sayi daha once kontrol ettigimiz sayilardan fazla varsa modDeger olarak bunu atiyoruz
             if (sayac > mod) {
                 mod = sayac;
                 modDeger = konyadizi.get(i);
@@ -746,6 +817,7 @@ public class IstatistikilkodevApplication {
         }
         System.out.println("konya Yagis Miktarinin - Modu = "+modDeger + " Frekans = "+mod);
 
+        //Diger kodlar zaten yukarida yaptigimin aynilari sadece farkli COLUMNlar icin
         // istanbul
         mod = 0;
         modDeger = istanbuldizi.get(0);
@@ -810,6 +882,7 @@ public class IstatistikilkodevApplication {
         Collections.sort(antalyadizi);
 
         //Gonyaaa
+        //dizideki elemanlarin toplamini aldim
         int toplam = 0;
         double ortMutlakSapma,ortalama,uzaklik=0.0;
         int i;
@@ -817,34 +890,28 @@ public class IstatistikilkodevApplication {
         for (i = 0; i < konyadizi.size(); i++) {
             toplam+=konyadizi.get(i);
         }
+        //ortalamasini hesapladim
         ortalama = (double)toplam/konyadizi.size();
 
-//        System.out.println(" ORtalama "+ortalama);
-
+        //dizinin boyutu kadar for la dondum
         for (i = 0; i < konyadizi.size(); i++) {
+            //uzakligi bulmak icin mod (%) kullanamadim, kullanim sekli dogru olmadigi icin bu turlu bende ortlamadan buyuk mu kucuk mu kontrol edip
+            //ya ortalamayi sayidan cikardim uzakligi bulmak icin
             if(ortalama>konyadizi.get(i)){
                 uzaklik += (ortalama-konyadizi.get(i));
-
-                //Gelen verilerin hangi degerlere sahip oldugunu kontrol etmek icin Loglar olusturdum
-                /*System.out.println(" kavsak1dizi.get(i) "+ kavsak1dizi.get(i));
-                System.out.println(" ortalama%kavsak1dizi.get(i)  "+ortalama%kavsak1dizi.get(i));
-                System.out.println(" Uzaklik "+uzaklik);*/
             }
+            //veya sayidan ortalamayi cikardim ve uzakliga ekledim cunku uzakligi daha asagida dizi boyutuna bolucem
             else{
                 uzaklik += (konyadizi.get(i)-ortalama);
-
-                //Gelen verilerin hangi degerlere sahip oldugunu kontrol etmek icin Loglar olusturdum
-                /*System.out.println(" kavsak1dizi.get(i) "+ kavsak1dizi.get(i));
-                System.out.println(" ortalama%kavsak1dizi.get(i)  "+ortalama%kavsak1dizi.get(i));
-                System.out.println(" Uzaklik "+uzaklik);*/
             }
         }
 
-//      System.out.println(" Uzaklik "+uzaklik);
+        //dizi boyutuna boldugumuzde zaten Ort Mutlak sapmayi buluyoruz
         ortMutlakSapma = (double) uzaklik/konyadizi.size();
         System.out.format("Konya - Ortalama Mutlak Sapma = %.2f\n",ortMutlakSapma);
 
         //istanbul
+        //Burada da kodlari tekrarlayip ayni sekilde diger dizilerin de hesapladim
         toplam = 0;
         uzaklik=0.0;
 
@@ -938,15 +1005,16 @@ public class IstatistikilkodevApplication {
         int toplam = 0;
         double ortMutlakSapma,ortalama,uzaklik=0.0,karelerininToplami=0.0,varyans=0.0;
         int i;
-
+        //tekrardan toplamini aldim dizinin
         for (i = 0; i < konyadizi.size(); i++) {
             toplam+=konyadizi.get(i);
         }
         ortalama = (double)toplam/konyadizi.size();
 
-//        System.out.println(" ORtalama "+ortalama);
-
+        //dizi boyutu kadar dondum for icinde
         for (i = 0; i < konyadizi.size(); i++) {
+            //buldugum ortalama sayidan buyuk ise yukarida yaptigim ayni mantigi burada da kullandim
+            // Mod(%) dogru sekilde calismadigi icin bu konu uzerinde bende uzakligi boyle buldum
             if(ortalama>konyadizi.get(i)){
                 uzaklik = ortalama - konyadizi.get(i);
                 karelerininToplami += Math.pow(uzaklik,2);
@@ -956,11 +1024,13 @@ public class IstatistikilkodevApplication {
                 karelerininToplami += Math.pow(uzaklik,2);
             }
         }
-//        System.out.println("karelerininToplami "+karelerininToplami);
+        //dizinin boyutunun 1 eksigiyle boldum ve varyansi elde ettim
+        //karelerinin toplamini da uzakligi kontrol ettigim de yukarida for icinde hesapladim
         varyans = (double) karelerininToplami/(konyadizi.size()-1);
         System.out.format("konya yagis miktarinin - Varyans = %.2f\n",varyans);
 
         //Istanbul
+        //Burada da yine ayni kodu devam ettirdim
         toplam = 0;
         uzaklik=0.0;
         karelerininToplami=0.0;
@@ -1046,6 +1116,7 @@ public class IstatistikilkodevApplication {
             ankaradizi.add(yagis.getAnkara());
             antalyadizi.add(yagis.getAntalya());
         }
+        //Standart SApmayi bulmak icin diziyi siraladik
         Collections.sort(konyadizi);
         Collections.sort(istanbuldizi);
         Collections.sort(ankaradizi);
@@ -1056,9 +1127,9 @@ public class IstatistikilkodevApplication {
         for(double sayi : konyadizi) {
             toplam += sayi;
         }
-
+        //ortalamasini buldum
         ortalama= toplam/konyadizi.size();
-
+//sayi-ortalama nin karesi formuluyle ilerledim ve standart sapmayi buldm
         for(double sayi: konyadizi) {
             standartSapma += Math.pow(sayi - ortalama, 2);
         }
@@ -1109,12 +1180,14 @@ public class IstatistikilkodevApplication {
         System.out.println("Antalya Yagis Miktari Standart Sapmasi = "+ Math.sqrt(standartSapma/ankaradizi.size()));
     }
 
-    static double ortalama(List<Double> kavsak1dizi) {
+//bu fonksiyonu bir sonraki fonksiyonda listenin ortalamsini bulurken kodlari tekrar yazmamak icin
+// fonksiyon seklinde olusturdum. parametre olarak List<Double> yagisList olarak verdim
+    static double ortalama(List<Double> yagisList) {
         double toplam = 0;
 
-        for (int i = 0; i < kavsak1dizi.size(); i++)
-            toplam = toplam + kavsak1dizi.get(i);
-        return toplam / kavsak1dizi.size();
+        for (int i = 0; i < yagisList.size(); i++)
+            toplam = toplam + yagisList.get(i);
+        return toplam / yagisList.size();
     }
 
     static void yagisDegisimKatsayisi(List<Yagis> yagisList){
@@ -1137,14 +1210,18 @@ public class IstatistikilkodevApplication {
         //Konya
         double toplam = 0;
         double degisimKatsayisi;
+        //degisim katsayisi mevcut sayilarin o sayilarin ortalamasi ile farkinin karesi oldugu icin, o formul uzerinden devam ettim ve bu sonucu elde ettim.
         for (int i = 0; i < konyadizi.size(); i++) {
             toplam = toplam + (konyadizi.get(i) - ortalama(konyadizi)) * (konyadizi.get(i) - ortalama(konyadizi));
         }
+        //Degisim katsayisini dizi elemanlarinin toplaminin dizi boyutunun 1 eksigine bolumunun
+        //dizinin ortalamsina bolumunde bulunan sayinin karekokune esit
         degisimKatsayisi = (Math.sqrt(toplam / (konyadizi.size() - 1)) / ortalama(konyadizi) );
 
         System.out.format("konya Degisim Katsayisi = %.3f\n",degisimKatsayisi);
 
         //Istanbul
+        //Kodlari tekrarladik sadece
         toplam = 0;
         for (int i = 0; i < istanbuldizi.size(); i++) {
             toplam = toplam + (istanbuldizi.get(i) - ortalama(istanbuldizi)) * (istanbuldizi.get(i) - ortalama(istanbuldizi));
@@ -1194,12 +1271,18 @@ public class IstatistikilkodevApplication {
         //Konya
         double altgrup,ustgrup;
         double ceyrekacikligi;
+        //2 dizi daha olustudum extradan
+        //sol ve sag veya (alt ve ust) olarak ayirabilirz bunlari
         List<Double> konyadiziAltceyrek = new ArrayList<Double>();
         List<Double> konyadiziUstceyrek = new ArrayList<Double>();
+        //dizi uzunlugunun cift mi tek mi oldugunu kontrol ettim
         if(konyadizi.size()%2==1){
+            //dizinin sol kismin da kalan ama dizi sirali suanda
+            //sol kisminda kaldigini anlamamiz icin sadece 2 ye boldum cunku dizinin uzunlugu tek
             for (int i = 0; i < konyadizi.size()/2; i++) {
                 konyadiziAltceyrek.add(konyadizi.get(i));
             }
+            //buldugum yeni listeyi de (uzunluk/2)/2 olarak o dizinin orta elemanini buldum
             altgrup=konyadiziAltceyrek.get((konyadizi.size()/2)/2);
             for (int i = (konyadizi.size()/2)+1; i < konyadizi.size(); i++) {
                 konyadiziUstceyrek.add(konyadizi.get(i));
@@ -1207,7 +1290,9 @@ public class IstatistikilkodevApplication {
             ustgrup=konyadiziUstceyrek.get((konyadizi.size()/2)/2);
 
             ceyrekacikligi = ustgrup - altgrup;
-        }else{
+        }
+        //eger dizi boyutu cift ise buraya girecek ve 2 ci forda kavsak1dizi.size()/2)+1 yapmadan direk olarak ortasini bulabilecegiz
+        else{
             for (int i = 0; i < konyadizi.size()/2; i++) {
                 konyadiziAltceyrek.add(konyadizi.get(i));
             }
@@ -1224,6 +1309,7 @@ public class IstatistikilkodevApplication {
 
 
         //Istanbul
+        //Kodun  tekrarini yazdim
         List<Double> istanbuldiziAltceyrek = new ArrayList<Double>();
         List<Double> istanbuldiziUstceyrek = new ArrayList<Double>();
         if(istanbuldizi.size()%2==1){
@@ -1277,6 +1363,7 @@ public class IstatistikilkodevApplication {
 
             ceyrekacikligi = ustgrup - altgrup;
         }
+//        System.out.format("Ankara %.1f - %.1f\n",ustgrup,altgrup);
         System.out.format("Ankara Ceyrek Araligi = %.1f\n",ceyrekacikligi);
 
 
@@ -1322,6 +1409,7 @@ public class IstatistikilkodevApplication {
             ankaradizi.add(yagis.getAnkara());
             antalyadizi.add(yagis.getAntalya());
         }
+        //Bu fonksiyonda da Max-Min + 1 formulunden degisim araligini buldum.
         System.out.println("Konya = " + (Collections.max(konyadizi) - Collections.min(konyadizi) + 1));
         System.out.println("Istanbul = " + (Collections.max(istanbuldizi) - Collections.min(istanbuldizi) + 1));
         System.out.println("Ankara = " + (Collections.max(ankaradizi) - Collections.min(ankaradizi) + 1));
